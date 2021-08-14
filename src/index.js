@@ -27,11 +27,12 @@ function getCurrentWeather (city){
         temp.textContent = `${response.main.temp}`;
         tempMin.textContent = `Min: ${response.main.temp_min}°C`;
         tempMax.textContent = `Max: ${response.main.temp_max}°C`;
-        humidity.textContent = `Humidity: ${response.main.humidity}`;
+        humidity.textContent = `Humidity: ${response.main.humidity}%`;
         pressure.textContent = `Pressure: ${response.main.pressure}`;
         windSpeed.textContent = `Wind speed: ${response.wind.speed}`;
         coord.longitude = response.coord.lon;
         coord.latitude = response.coord.lat;
+        console.log(coord);
     })
     .catch(function(err){
         console.log(err);
@@ -39,8 +40,8 @@ function getCurrentWeather (city){
 };
 
 
-function getForecastWeather(city){
-    let url = `https://api.openweathermap.org/data/2.5/find?q=London&units=metric&appid=7c4c3da16d8dd1a6f355c9a526854dc0`
+function getForecastWeather(lat, long){
+    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=current,minutely,alerts&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
     fetch(url, {mode:'cors'})
     .then(function(response){
         console.log('hi');
@@ -51,13 +52,15 @@ function getForecastWeather(city){
     })
 }
 
-getForecastWeather();
+
 getCurrentWeather('london');
+// getForecastWeather(coord.latitude, coord.longitude);
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     let city = input.value;
     getCurrentWeather(city);
+    getForecastWeather(coord.latitude, coord.longitude)
 })
 
 
