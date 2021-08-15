@@ -11,9 +11,10 @@ const windSpeed = document.querySelector('#windSpeed');
 const form = document.querySelector('form');
 const input = document.querySelector('input');
 const submit = document.querySelector('#submit');
+const dailyDiv = document.querySelector('#dailyBox');
 
-let coord = {}; // contains latitude and longitude properties
 function getCurrentWeather (city){
+    let coord = {};
     let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
     fetch(url, {mode:'cors'})
     .then(function(response){
@@ -33,10 +34,16 @@ function getCurrentWeather (city){
         coord.longitude = response.coord.lon;
         coord.latitude = response.coord.lat;
         console.log(coord);
+        return coord
+    })
+    .then(function(response){
+        getForecastWeather(coord.latitude, coord.longitude);
     })
     .catch(function(err){
         console.log(err);
     })
+    // console.log(coord);
+    return coord
 };
 
 
@@ -49,9 +56,21 @@ function getForecastWeather(lat, long){
     })
     .then(function(response){
         console.log(response);
+        renderDailyData(response);
     })
 }
 
+function renderDailyData(object){
+    object.daily.forEach( (day, index) => {
+        if (index === 0){return};
+        const div = document.createElement('div');
+        div.style.width = '15rem';
+        div.style.height = '15rem';
+        div.style.backgroundColor = '#985E6D';
+        div.style.margin = '1rem';
+        dailyDiv.appendChild(div);
+    })
+}
 
 getCurrentWeather('london');
 // getForecastWeather(coord.latitude, coord.longitude);
@@ -60,7 +79,7 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     let city = input.value;
     getCurrentWeather(city);
-    getForecastWeather(coord.latitude, coord.longitude)
+
 })
 
 
