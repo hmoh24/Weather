@@ -12,6 +12,7 @@ const form = document.querySelector('form');
 const input = document.querySelector('input');
 const submit = document.querySelector('#submit');
 const dailyDiv = document.querySelector('#dailyBox');
+const dailyArray = [...document.querySelectorAll('.daily')];
 
 function getCurrentWeather (city){
     let coord = {};
@@ -24,7 +25,8 @@ function getCurrentWeather (city){
         console.log(response);
         cityName.textContent = city.toUpperCase();
         weather.textContent = response.weather[0].main;
-        time.textContent = 'TBA time';
+        let dateObject = new Date ((response.dt)*1000);
+        time.textContent = `${dateObject.toLocaleString("en-UK", {weekday:"long", month:"long", day:"numeric", hour:"numeric"})}:00`; //date
         temp.textContent = `${response.main.temp}`;
         tempMin.textContent = `Min: ${response.main.temp_min}°C`;
         tempMax.textContent = `Max: ${response.main.temp_max}°C`;
@@ -33,7 +35,6 @@ function getCurrentWeather (city){
         windSpeed.textContent = `Wind speed: ${response.wind.speed}`;
         coord.longitude = response.coord.lon;
         coord.latitude = response.coord.lat;
-        console.log(coord);
         return coord
     })
     .then(function(response){
@@ -46,12 +47,10 @@ function getCurrentWeather (city){
     return coord
 };
 
-
 function getForecastWeather(lat, long){
     let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=current,minutely,alerts&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
     fetch(url, {mode:'cors'})
     .then(function(response){
-        console.log('hi');
         return response.json();
     })
     .then(function(response){
@@ -63,12 +62,22 @@ function getForecastWeather(lat, long){
 function renderDailyData(object){
     object.daily.forEach( (day, index) => {
         if (index === 0){return};
-        const div = document.createElement('div');
-        div.style.width = '15rem';
-        div.style.height = '15rem';
-        div.style.backgroundColor = '#985E6D';
-        div.style.margin = '1rem';
-        dailyDiv.appendChild(div);
+        dailyArray.forEach(x=>{
+            if (index === Number(x.id)){
+                console.log(dailyArray[index-1].children);
+                let dateObject = new Date ((object.daily[index].dt)*1000);
+                dailyArray[index-1].children[0].textContent = dateObject.toLocaleString("en-UK", {weekday:"long"}); //date
+                dailyArray[index-1].children[3].textContent = object.daily[index].weather[0].main;  //weather
+                dailyArray[index-1].children[4].textContent = `H: ${object.daily[index].temp.max}°C`; //max temp
+                dailyArray[index-1].children[5].textContent = `L: ${object.daily[index].temp.min}°C`; //min temp
+                if (object.daily[index].hasOwnProperty('rain')){
+                    dailyArray[index-1].children[1].textContent = `Rain: ${object.daily[index].rain}mm`; //rain volume
+                }
+                if (object.daily[index].hasOwnProperty('snow')){
+                    dailyArray[index-1].children[1].textContent = `Snow: ${object.daily[index].snow}mm`; //snow volume
+                }
+            }
+        })
     })
 }
 
@@ -79,7 +88,6 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     let city = input.value;
     getCurrentWeather(city);
-
 })
 
 
