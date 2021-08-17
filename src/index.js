@@ -12,7 +12,12 @@ const form = document.querySelector('form');
 const input = document.querySelector('input');
 const submit = document.querySelector('#submit');
 const dailyDiv = document.querySelector('#dailyBox');
-const dailyArray = [...document.querySelectorAll('.daily')];
+let dailyArray = [...document.querySelectorAll('.daily')];
+const currentDay = document.querySelector('#timeDay');
+const currentDate = document.querySelector('#timeDate');
+const currentHour = document.querySelector('#timeHour');
+let hourlyArray = [...document.querySelectorAll('.hourly')];
+
 
 function getCurrentWeather (city){
     let coord = {};
@@ -26,10 +31,12 @@ function getCurrentWeather (city){
         cityName.textContent = city.toUpperCase();
         weather.textContent = response.weather[0].main;
         let dateObject = new Date ((response.dt)*1000);
-        time.textContent = `${dateObject.toLocaleString("en-UK", {weekday:"long", month:"long", day:"numeric", hour:"numeric"})}:00`; //date
-        temp.textContent = `${response.main.temp}`;
-        tempMin.textContent = `Min: ${response.main.temp_min}°C`;
-        tempMax.textContent = `Max: ${response.main.temp_max}°C`;
+        currentDay.textContent = dateObject.toLocaleString("en-UK", {weekday:"long"});
+        currentDate.textContent = dateObject.toLocaleString("en-UK", {month:"long", day:"numeric"});
+        currentHour.textContent = `${dateObject.toLocaleString("en-UK", {hour:"numeric"})}:00`;
+        temp.textContent = `${Math.round(response.main.temp)}`;
+        tempMin.textContent = `Min: ${Math.round(response.main.temp_min)}°C`;
+        tempMax.textContent = `Max: ${Math.round(response.main.temp_max)}°C`;
         humidity.textContent = `Humidity: ${response.main.humidity}%`;
         pressure.textContent = `Pressure: ${response.main.pressure}`;
         windSpeed.textContent = `Wind speed: ${response.wind.speed}`;
@@ -56,6 +63,7 @@ function getForecastWeather(lat, long){
     .then(function(response){
         console.log(response);
         renderDailyData(response);
+        renderHourlyData(response);
     })
 }
 
@@ -65,19 +73,27 @@ function renderDailyData(object){
         dailyArray.forEach(x=>{
             if (index === Number(x.id)){
                 console.log(dailyArray[index-1].children);
-                let dateObject = new Date ((object.daily[index].dt)*1000);
+                let dateObject = new Date ((day.dt)*1000);
                 dailyArray[index-1].children[0].textContent = dateObject.toLocaleString("en-UK", {weekday:"long"}); //date
-                dailyArray[index-1].children[3].textContent = object.daily[index].weather[0].main;  //weather
-                dailyArray[index-1].children[4].textContent = `H: ${object.daily[index].temp.max}°C`; //max temp
-                dailyArray[index-1].children[5].textContent = `L: ${object.daily[index].temp.min}°C`; //min temp
-                if (object.daily[index].hasOwnProperty('rain')){
-                    dailyArray[index-1].children[1].textContent = `Rain: ${object.daily[index].rain}mm`; //rain volume
-                }
-                if (object.daily[index].hasOwnProperty('snow')){
-                    dailyArray[index-1].children[1].textContent = `Snow: ${object.daily[index].snow}mm`; //snow volume
+                dailyArray[index-1].children[3].textContent = day.weather[0].main;  //weather
+                dailyArray[index-1].children[4].textContent = `H: ${Math.round(day.temp.max)}°C`; //max temp
+                dailyArray[index-1].children[5].textContent = `L: ${Math.round(day.temp.min)}°C`; //min temp
+                if (day.hasOwnProperty('rain')){
+                    dailyArray[index-1].children[1].textContent = `Rain: ${(day.pop)*100}%`; //precipitation chance
                 }
             }
         })
+    })
+}
+
+function renderHourlyData(object){
+    let objectArray = object.hourly.slice(1,25);
+    objectArray.forEach( (hour, index) => {
+        let dateObject = new Date ((hour.dt)*1000);
+        hourlyArray[index].children[0].textContent = `${dateObject.toLocaleString("en-UK", {hour:"numeric"})}:00`;
+        hourlyArray[index].children[1].textContent = `${Math.round(hour.temp)}°C`;
+        hourlyArray[index].children[2].textContent = `Rain: ${hour.pop}%`;
+        hourlyArray[index].children[4].textContent = hour.weather[0].main;
     })
 }
 
