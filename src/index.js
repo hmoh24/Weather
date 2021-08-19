@@ -91,10 +91,14 @@ function renderHourlyData(object){
     objectArray.forEach( (hour, index) => {
         let dateObject = new Date ((hour.dt)*1000);
         hourlyArray[index].children[0].textContent = `${dateObject.toLocaleString("en-UK", {hour:"numeric"})}:00`;
-        hourlyArray[index].children[1].textContent = `${Math.round(hour.temp)}°C`;
-        hourlyArray[index].children[2].textContent = `Rain: ${hour.pop}%`;
-        hourlyArray[index].children[4].textContent = hour.weather[0].main;
+        hourlyArray[index].children[4].textContent = `${Math.round(hour.temp)}°C`;
+        hourlyArray[index].children[1].textContent = `Rain: ${hour.pop}%`;
+        hourlyArray[index].children[3].textContent = hour.weather[0].main;
     })
+}
+
+function renderIconLink(object){
+    
 }
 
 getCurrentWeather('london');
