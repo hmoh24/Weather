@@ -17,7 +17,7 @@ const currentDay = document.querySelector('#timeDay');
 const currentDate = document.querySelector('#timeDate');
 const currentHour = document.querySelector('#timeHour');
 let hourlyArray = [...document.querySelectorAll('.hourly')];
-
+const weatherIcon = document.querySelector('#weatherIcon');
 
 function getCurrentWeather (city){
     let coord = {};
@@ -30,6 +30,7 @@ function getCurrentWeather (city){
         console.log(response);
         cityName.textContent = city.toUpperCase();
         weather.textContent = response.weather[0].main;
+        weatherIcon.src = `https://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
         let dateObject = new Date ((response.dt)*1000);
         currentDay.textContent = dateObject.toLocaleString("en-UK", {weekday:"long"});
         currentDate.textContent = dateObject.toLocaleString("en-UK", {month:"long", day:"numeric"});
@@ -75,6 +76,7 @@ function renderDailyData(object){
                 console.log(dailyArray[index-1].children);
                 let dateObject = new Date ((day.dt)*1000);
                 dailyArray[index-1].children[0].textContent = dateObject.toLocaleString("en-UK", {weekday:"long"}); //date
+                dailyArray[index-1].children[2].src = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
                 dailyArray[index-1].children[3].textContent = day.weather[0].main;  //weather
                 dailyArray[index-1].children[4].textContent = `H: ${Math.round(day.temp.max)}°C`; //max temp
                 dailyArray[index-1].children[5].textContent = `L: ${Math.round(day.temp.min)}°C`; //min temp
@@ -92,14 +94,12 @@ function renderHourlyData(object){
         let dateObject = new Date ((hour.dt)*1000);
         hourlyArray[index].children[0].textContent = `${dateObject.toLocaleString("en-UK", {hour:"numeric"})}:00`;
         hourlyArray[index].children[4].textContent = `${Math.round(hour.temp)}°C`;
-        hourlyArray[index].children[1].textContent = `Rain: ${hour.pop}%`;
+        hourlyArray[index].children[2].src = `https://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`
+        hourlyArray[index].children[1].textContent = `Rain: ${Math.round((hour.pop)*100)}%`;
         hourlyArray[index].children[3].textContent = hour.weather[0].main;
     })
 }
 
-function renderIconLink(object){
-    
-}
 
 getCurrentWeather('london');
 // getForecastWeather(coord.latitude, coord.longitude);
