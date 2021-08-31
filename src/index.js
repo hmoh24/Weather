@@ -29,6 +29,8 @@ function getCurrentWeather (city){
     .then(function(response){
         console.log(response);
         cityName.textContent = city.toUpperCase();
+        if (city.length > 11) {cityName.style.fontSize = "1.5rem"}
+        else {cityName.style.fontSize = "2rem"};
         weather.textContent = response.weather[0].main;
         weatherIcon.src = `https://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
         let dateObject = new Date ((response.dt)*1000);
@@ -49,7 +51,8 @@ function getCurrentWeather (city){
         getForecastWeather(coord.latitude, coord.longitude);
     })
     .catch(function(err){
-        console.log(err);
+        alert(`Unable to find data for ${city}, restting to default`);
+        getCurrentWeather('london');
     })
     // console.log(coord);
     return coord
@@ -100,42 +103,15 @@ function renderHourlyData(object){
     })
 }
 
-
-getCurrentWeather('london');
-// getForecastWeather(coord.latitude, coord.longitude);
-
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     let city = input.value;
     getCurrentWeather(city);
-})
+});
+
+getCurrentWeather('london');
 
 
 
 
 
-
-
-// function elementCreate(name, id, element){
-//     const createdElement = document.createElement(element);
-//     createdElement.textContent = 'placehold';
-//     createdElement.setAttribute('id', `city${id}`);
-//     mainDiv.appendChild(createdElement);
-// }
-
-// function weatherBoxCreate(){
-//     elementCreate(1, 'h2', mainDiv);
-//     elementCreate(2, 'h2', mainDiv);
-// }
-
-// weatherBoxCreate();
-
-
-
-
-
-
-
-//return object function
-//function to map that to DOM
-//need to write out structure in html
