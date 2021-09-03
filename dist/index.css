@@ -148,8 +148,8 @@ form {
 #celsius1 {
   grid-column: 2/3;
   align-self: center;
-  margin-bottom: 5.5rem;
-  font-size:1.5rem;
+  margin-bottom: 2.5rem;
+  font-size:2rem;
   /* position: absolute;
   top: 4.5rem;
   left: 14rem; */

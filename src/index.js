@@ -19,56 +19,60 @@ const currentHour = document.querySelector('#timeHour');
 let hourlyArray = [...document.querySelectorAll('.hourly')];
 const weatherIcon = document.querySelector('#weatherIcon');
 
-function getCurrentWeather (city){
-    let coord = {};
-    let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
-    fetch(url, {mode:'cors'})
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(response){
-        console.log(response);
+
+
+async function displayWeather(city) {
+    try {
+        let coord = {};
+        let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`;
+    
+        const getCurrent = await fetch(url, {mode:'cors'});
+    
+        const currentWeatherData = await getCurrent.json();
         cityName.textContent = city.toUpperCase();
         if (city.length > 11) {cityName.style.fontSize = "1.5rem"}
         else {cityName.style.fontSize = "2rem"};
-        weather.textContent = response.weather[0].main;
-        weatherIcon.src = `https://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
-        let dateObject = new Date ((response.dt)*1000);
+        weather.textContent = currentWeatherData.weather[0].main;
+        weatherIcon.src = `https://openweathermap.org/img/wn/${currentWeatherData.weather[0].icon}@2x.png`;
+        let dateObject = new Date ((currentWeatherData.dt)*1000);
         currentDay.textContent = dateObject.toLocaleString("en-UK", {weekday:"long"});
         currentDate.textContent = dateObject.toLocaleString("en-UK", {month:"long", day:"numeric"});
         currentHour.textContent = `${dateObject.toLocaleString("en-UK", {hour:"numeric"})}:00`;
-        temp.textContent = `${Math.round(response.main.temp)}`;
-        tempMin.textContent = `Min: ${Math.round(response.main.temp_min)}°C`;
-        tempMax.textContent = `Max: ${Math.round(response.main.temp_max)}°C`;
-        humidity.textContent = `Humidity: ${response.main.humidity}%`;
-        pressure.textContent = `Pressure: ${response.main.pressure}`;
-        windSpeed.textContent = `Wind speed: ${response.wind.speed}`;
-        coord.longitude = response.coord.lon;
-        coord.latitude = response.coord.lat;
-        return coord
-    })
-    .then(function(response){
+        temp.textContent = `${Math.round(currentWeatherData.main.temp)}`;
+        tempMin.textContent = `Min: ${Math.round(currentWeatherData.main.temp_min)}°C`;
+        tempMax.textContent = `Max: ${Math.round(currentWeatherData.main.temp_max)}°C`;
+        humidity.textContent = `Humidity: ${currentWeatherData.main.humidity}%`;
+        pressure.textContent = `Pressure: ${currentWeatherData.main.pressure}`;
+        windSpeed.textContent = `Wind speed: ${currentWeatherData.wind.speed}`;
+        coord.longitude = currentWeatherData.coord.lon;
+        coord.latitude = currentWeatherData.coord.lat;
+            
+        const coordData = await currentWeatherData;
         getForecastWeather(coord.latitude, coord.longitude);
-    })
-    .catch(function(err){
+    }
+    catch (error) {
         alert(`Unable to find data for ${city}, restting to default`);
-        getCurrentWeather('london');
-    })
-    // console.log(coord);
-    return coord
-};
+        displayWeather('london');
+    }
+}
 
-function getForecastWeather(lat, long){
-    let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=current,minutely,alerts&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
-    fetch(url, {mode:'cors'})
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(response){
-        console.log(response);
-        renderDailyData(response);
-        renderHourlyData(response);
-    })
+
+
+
+
+async function getForecastWeather(lat, long){
+    try{
+        let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=current,minutely,alerts&appid=7c4c3da16d8dd1a6f355c9a526854dc0&units=metric`
+        const getData = await fetch(url, {mode:'cors'});
+        const processData = await getData.json();
+        const displayData = await processData;
+        renderDailyData(displayData);
+        renderHourlyData(displayData)
+    }
+    catch (error) {
+        alert(`Unable to find data for ${city}, restting to default`);
+        displayWeather('london');
+    }
 }
 
 function renderDailyData(object){
@@ -106,10 +110,10 @@ function renderHourlyData(object){
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     let city = input.value;
-    getCurrentWeather(city);
+    displayWeather(city);
 });
 
-getCurrentWeather('london');
+displayWeather('london');
 
 
 
