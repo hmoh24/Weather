@@ -42,8 +42,8 @@ async function displayWeather(city) {
         tempMin.textContent = `Min: ${Math.round(currentWeatherData.main.temp_min)}°C`;
         tempMax.textContent = `Max: ${Math.round(currentWeatherData.main.temp_max)}°C`;
         humidity.textContent = `Humidity: ${currentWeatherData.main.humidity}%`;
-        pressure.textContent = `Pressure: ${currentWeatherData.main.pressure}`;
-        windSpeed.textContent = `Wind speed: ${currentWeatherData.wind.speed}`;
+        pressure.textContent = `Pressure: ${currentWeatherData.main.pressure} hPa`;
+        windSpeed.textContent = `Wind speed: ${currentWeatherData.wind.speed} m/s`;
         coord.longitude = currentWeatherData.coord.lon;
         coord.latitude = currentWeatherData.coord.lat;
             
