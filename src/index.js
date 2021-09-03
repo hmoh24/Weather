@@ -41,8 +41,8 @@ function getCurrentWeather (city){
         tempMin.textContent = `Min: ${Math.round(response.main.temp_min)}°C`;
         tempMax.textContent = `Max: ${Math.round(response.main.temp_max)}°C`;
         humidity.textContent = `Humidity: ${response.main.humidity}%`;
-        pressure.textContent = `Pressure: ${response.main.pressure}`;
-        windSpeed.textContent = `Wind speed: ${response.wind.speed}`;
+        pressure.textContent = `Pressure: ${response.main.pressure} hPa`;
+        windSpeed.textContent = `Wind speed: ${response.wind.speed} m/s`;
         coord.longitude = response.coord.lon;
         coord.latitude = response.coord.lat;
         return coord
@@ -54,8 +54,6 @@ function getCurrentWeather (city){
         alert(`Unable to find data for ${city}, restting to default`);
         getCurrentWeather('london');
     })
-    // console.log(coord);
-    return coord
 };
 
 function getForecastWeather(lat, long){
@@ -69,6 +67,10 @@ function getForecastWeather(lat, long){
         renderDailyData(response);
         renderHourlyData(response);
     })
+    .catch(function(err){
+        alert(`Unable to find data for ${city}, restting to default`);
+        getCurrentWeather('london');
+    });
 }
 
 function renderDailyData(object){
